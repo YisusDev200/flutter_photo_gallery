@@ -1,10 +1,11 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'database_helper.dart';
 import 'package:flutter/material.dart';
 
 class SyncService {
-  final String apiUrl = "http://192.168.1.65:3000/api/photos";
+  final String apiUrl = dotenv.env['API_URL'] ?? "";
 
   Future<void> syncWithMySQL(BuildContext context) async {
     final dbHelper = DatabaseHelper();
@@ -48,7 +49,6 @@ class SyncService {
           syncSuccess = false; // Si falla la sincronización, marcamos syncSuccess como falso
         }
       } catch (e) {
-        print('Network error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Network error while trying to synchronize')),
         );
@@ -59,7 +59,6 @@ class SyncService {
     // Solo eliminar los datos locales si la sincronización fue exitosa para todas las fotos
     if (syncSuccess && photos.isNotEmpty) {
       await dbHelper.deleteAllPhotos();
-      print('All photos have been deleted from SQLite.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Synchronization successful and local data deleted.')),
       );

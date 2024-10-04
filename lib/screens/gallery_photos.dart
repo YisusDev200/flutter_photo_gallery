@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:gallery_photos/screens/home_page.dart';
 import 'dart:convert';
@@ -10,7 +11,7 @@ class GalleryPhotos extends StatefulWidget {
 }
 
 class _GalleryPhotosState extends State<GalleryPhotos> {
-  final String apiUrl = "http://192.168.1.65:3000/api/photos";
+  final String apiUrl = dotenv.env['API_URL'] ?? "";
   List<dynamic> _photos = [];
   bool _isConnected = true;
 
