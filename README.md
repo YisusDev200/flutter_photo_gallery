@@ -26,6 +26,8 @@ Esta es una aplicación móvil desarrollada en Flutter que permite a los usuario
    flutter pub get
    ```
 
+3. Configura las variables de entorno .env
+
 # Uso
 
 ```bash
