@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gallery_photos/services/photo_service.dart';
 
 class GalleryPhotos extends StatefulWidget {
+  const GalleryPhotos({super.key});
   @override
   _GalleryPhotosState createState() => _GalleryPhotosState();
 }
