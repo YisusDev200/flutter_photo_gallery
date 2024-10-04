@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:gallery_photos/screens/home_page.dart';
-import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:gallery_photos/services/photo_service.dart';
 
 class GalleryPhotos extends StatefulWidget {
   @override
@@ -11,7 +9,7 @@ class GalleryPhotos extends StatefulWidget {
 }
 
 class _GalleryPhotosState extends State<GalleryPhotos> {
-  final String apiUrl = dotenv.env['API_URL'] ?? "";
+  PhotoService photoService = PhotoService(); 
   List<dynamic> _photos = [];
   bool _isConnected = true;
 
@@ -31,9 +29,9 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
     }
 
     try {
-      var result = await http.get(Uri.parse(apiUrl));
+      var photos = await photoService.fetchPhotos(); // Usa el servicio
       setState(() {
-        _photos = json.decode(result.body);
+        _photos = photos;
         _isConnected = true;
       });
     } catch (e) {
@@ -51,7 +49,19 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
       ),
       body: _isConnected
           ? _photos.isEmpty
-              ? Center(child: CircularProgressIndicator())
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Sin fotos'),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: fetchPhotos,
+                        child: Text('Recargar'), // Botón para recargar
+                      ),
+                    ],
+                  ),
+                )
               : RefreshIndicator(
                   onRefresh: fetchPhotos,
                   child: GridView.builder(
@@ -107,7 +117,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: fetchPhotos,
-                    child: Text('Reload'),
+                    child: Text('Recargar'), // Botón para recargar si no hay conexión
                   ),
                 ],
               ),
