@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:gallery_photos/screens/user_list_widget.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,60 +75,62 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Synchronization'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Mostrar imagen seleccionada
-            if (_selectedImage != null)
-              Image.memory(_selectedImage!, height: 100, width: 100),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Select Image'),
-            ),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  PhotoListWidget(),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(labelText: 'Name'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(labelText: 'Description'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _savePhoto,
-                    child: Text('Save to SQLite'),
-                  ),
-                ],
+      body: SingleChildScrollView( // Envolver el contenido en un SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Mostrar imagen seleccionada
+              if (_selectedImage != null)
+                Image.memory(_selectedImage!, height: 100, width: 100),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Select Image'),
               ),
-            ),
-            // Botón de sincronización con MySQL
-            SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () async {
-                await _syncService.syncWithMySQL(context);
-              },
-              child: Text('Sync with MySQL'),
-            ),
-          ],
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    PhotoListWidget(),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(labelText: 'Name'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a name';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(labelText: 'Description'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a description';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _savePhoto,
+                      child: Text('Save to SQLite'),
+                    ),
+                  ],
+                ),
+              ),
+              // Botón de sincronización con MySQL
+              SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () async {
+                  await _syncService.syncWithMySQL(context);
+                },
+                child: Text('Sync with MySQL'),
+              ),
+            ],
+          ),
         ),
       ),
     );
