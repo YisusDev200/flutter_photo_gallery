@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery_photos/screens/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gallery_photos/services/photo_service.dart';
+import 'package:gallery_photos/services/delete_photo_service.dart';
 
 class GalleryPhotos extends StatefulWidget {
   const GalleryPhotos({super.key});
@@ -10,7 +11,8 @@ class GalleryPhotos extends StatefulWidget {
 }
 
 class _GalleryPhotosState extends State<GalleryPhotos> {
-  PhotoService photoService = PhotoService(); 
+  PhotoService photoService = PhotoService();
+  DeletePhotoService deletePhotoService = DeletePhotoService();
   List<dynamic> _photos = [];
   bool _isConnected = true;
 
@@ -30,7 +32,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
     }
 
     try {
-      var photos = await photoService.fetchPhotos(); // Usa el servicio
+      var photos = await photoService.fetchPhotos();
       setState(() {
         _photos = photos;
         _isConnected = true;
@@ -39,6 +41,46 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
       setState(() {
         _isConnected = false;
       });
+    }
+  }
+
+  Future<void> deletePhoto(int id) async {
+    // Mostrar un diálogo de confirmación antes de eliminar
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar eliminación'),
+          content: Text('¿Estás seguro de que deseas eliminar esta foto?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // Cerrar diálogo sin eliminar
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Cerrar diálogo y devolver true
+              child: Text('Eliminar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Si el usuario confirma, proceder a eliminar
+    if (confirm == true) {
+      try {
+        await deletePhotoService.deletePhoto(id);
+        setState(() {
+          _photos.removeWhere((photo) => photo['id'] == id);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Photo deleted successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete photo')),
+        );
+      }
     }
   }
 
@@ -58,7 +100,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: fetchPhotos,
-                        child: Text('Recargar'), // Botón para recargar
+                        child: Text('Recargar'),
                       ),
                     ],
                   ),
@@ -103,6 +145,13 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                                   color: Colors.grey[600],
                                 ),
                               ),
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  // Llamar a la función para eliminar la foto
+                                  deletePhoto(_photos[index]['id']);
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -118,7 +167,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: fetchPhotos,
-                    child: Text('Recargar'), // Botón para recargar si no hay conexión
+                    child: Text('Recargar'),
                   ),
                 ],
               ),

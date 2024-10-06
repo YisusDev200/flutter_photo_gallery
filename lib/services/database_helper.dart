@@ -48,4 +48,14 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('photos');
   }
+
+  // Método para eliminar una foto por ID
+  Future<int> deletePhoto(int id) async {
+    final db = await database;
+    return await db.delete(
+      'photos',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

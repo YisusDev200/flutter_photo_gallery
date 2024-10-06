@@ -24,6 +24,11 @@ class _PhotoListWidgetState extends State<PhotoListWidget> {
     });
   }
 
+  Future<void> _deletePhoto(int id) async {
+    await dbHelper.deletePhoto(id); // Eliminar la foto de la base de datos
+    _fetchPhotos(); // Recargar las fotos después de la eliminación
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,6 +69,32 @@ class _PhotoListWidgetState extends State<PhotoListWidget> {
                           : Icon(Icons.photo), // Mostrar la imagen o un icono por defecto
                       title: Text('${photo['name']}'), // Mostrar el nombre
                       subtitle: Text('${photo['description']}'), // Mostrar la descripción
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          // Mostrar confirmación antes de eliminar
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Eliminar foto'),
+                              content: Text('¿Estás seguro de que quieres eliminar esta foto?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _deletePhoto(photo['id']); // Llamar a la función para eliminar la foto
+                                  },
+                                  child: Text('Eliminar'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
