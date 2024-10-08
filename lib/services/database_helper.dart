@@ -58,4 +58,15 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  // Método para actualizar una foto por ID
+  Future<int> updatePhoto(int id, Map<String, dynamic> newValues) async {
+    final db = await database;
+    return await db.update(
+      'photos',
+      newValues,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

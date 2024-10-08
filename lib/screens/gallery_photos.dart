@@ -3,6 +3,7 @@ import 'package:gallery_photos/screens/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gallery_photos/services/photo_service.dart';
 import 'package:gallery_photos/services/delete_photo_service.dart';
+import 'package:gallery_photos/screens/EditPhotoScreen.dart'; 
 
 class GalleryPhotos extends StatefulWidget {
   const GalleryPhotos({super.key});
@@ -45,7 +46,6 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
   }
 
   Future<void> deletePhoto(int id) async {
-    // Mostrar un diálogo de confirmación antes de eliminar
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -54,11 +54,11 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
           content: Text('¿Estás seguro de que deseas eliminar esta foto?'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false), // Cerrar diálogo sin eliminar
+              onPressed: () => Navigator.of(context).pop(false),
               child: Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true), // Cerrar diálogo y devolver true
+              onPressed: () => Navigator.of(context).pop(true),
               child: Text('Eliminar'),
             ),
           ],
@@ -66,7 +66,6 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
       },
     );
 
-    // Si el usuario confirma, proceder a eliminar
     if (confirm == true) {
       try {
         await deletePhotoService.deletePhoto(id);
@@ -74,11 +73,11 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
           _photos.removeWhere((photo) => photo['id'] == id);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo deleted successfully')),
+          SnackBar(content: Text('Foto eliminada con éxito')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete photo')),
+          SnackBar(content: Text('Error al eliminar la foto')),
         );
       }
     }
@@ -145,12 +144,29 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                                   color: Colors.grey[600],
                                 ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  // Llamar a la función para eliminar la foto
-                                  deletePhoto(_photos[index]['id']);
-                                },
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditPhotoScreen(
+                                            photoId: _photos[index]['id'],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      deletePhoto(_photos[index]['id']);
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),

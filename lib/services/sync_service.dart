@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:convert'; 
 import 'database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -26,33 +27,61 @@ class SyncService {
 
     // Si hay conexión, procedemos con la sincronización
     for (var photo in photos) {
-      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
-      request.fields['name'] = photo['name'];
-      request.fields['description'] = photo['description'];
-
-      // Añadir la imagen como archivo en la solicitud multipart/form-data
-      if (photo['photo'] != null) {
-        request.files.add(http.MultipartFile.fromBytes(
-          'photo',
-          photo['photo'],
-          filename: 'photo_${photo['id']}.png',
-        ));
-      }
-
       try {
-        final response = await request.send();
+        final checkUrl = Uri.parse('$apiUrl/${photo['id']}');
+        final checkResponse = await http.get(checkUrl);
 
-        if (response.statusCode == 201) {
-          print('Photo synchronized: ${photo['name']}');
+        if (checkResponse.statusCode == 200) {
+          var request = http.MultipartRequest('PUT', checkUrl);
+          request.fields['name'] = photo['name'];
+          request.fields['description'] = photo['description'];
+
+          if (photo['photo'] != null) {
+            request.files.add(http.MultipartFile.fromBytes(
+              'photo',
+              photo['photo'],
+              filename: 'photo_${photo['id']}.png',
+            ));
+          }
+
+          final updateResponse = await request.send();
+
+          if (updateResponse.statusCode == 200) {
+            print('Photo updated: ${photo['name']}');
+          } else {
+            print('Error updating photo: ${updateResponse.statusCode}');
+            syncSuccess = false;
+          }
+        } else if (checkResponse.statusCode == 404) {
+          var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+          request.fields['name'] = photo['name'];
+          request.fields['description'] = photo['description'];
+
+          if (photo['photo'] != null) {
+            request.files.add(http.MultipartFile.fromBytes(
+              'photo',
+              photo['photo'],
+              filename: 'photo_${photo['id']}.png',
+            ));
+          }
+
+          final response = await request.send();
+
+          if (response.statusCode == 201) {
+            print('Photo synchronized: ${photo['name']}');
+          } else {
+            print('Error synchronizing: ${response.statusCode}');
+            syncSuccess = false;
+          }
         } else {
-          print('Error synchronizing: ${response.statusCode}');
-          syncSuccess = false; // Si falla la sincronización, marcamos syncSuccess como falso
+          print('Error checking photo existence: ${checkResponse.statusCode}');
+          syncSuccess = false;
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Network error while trying to synchronize')),
         );
-        syncSuccess = false; // Si hay un error de red, también marcamos syncSuccess como falso
+        syncSuccess = false;
       }
     }
 
