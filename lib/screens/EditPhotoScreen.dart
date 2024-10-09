@@ -34,41 +34,88 @@ class _EditPhotoScreenState extends State<EditPhotoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Foto'),
+        title: const Text('Editar Foto'),
+        backgroundColor: Color(0xFF1A5276),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                "Editar detalles de la foto",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1A5276),
+                ),
+              ),
+              const SizedBox(height: 20),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: const InputDecoration(labelText: 'Nombre', 
+                labelStyle: TextStyle(fontSize: 18), border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF1A5276)),
+                ),
+                ),
                 onSaved: (value) {
                   _name = value ?? '';
                 },
               ),
+              const SizedBox(height: 20),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Descripción'),
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Descripción', 
+                labelStyle: TextStyle(fontSize: 18),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF1A5276)),
+                ),
+                ),
                 onSaved: (value) {
                   _description = value ?? '';
                 },
               ),
-              SizedBox(height: 20),
-              _imageFile != null
-                  ? Image.file(
+              const SizedBox(height: 20),
+              Center(
+               child:_imageFile != null
+               ?ClipRRect(
+                borderRadius:BorderRadius.circular(10),
+                child: Image.file(
                       _imageFile!,
                       height: 200,
-                    )
-                  : TextButton.icon(
-                      icon: Icon(Icons.photo),
-                      label: Text('Seleccionar imagen'),
-                      onPressed: _pickImage,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
                     ),
-              SizedBox(height: 20),
-              ElevatedButton(
+               )
+                  : TextButton.icon(
+                      icon: const Icon(Icons.photo, color: Color(0xFF1A5276)),
+                      label: const Text('Seleccionar imagen'),
+                      onPressed: _pickImage,
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFF1A5276), textStyle: const TextStyle(fontSize: 18),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 20.0
+                        ),
+                        backgroundColor: const Color(0xFFE3F2FD),                        
+                      ),
+                    ),
+              ),
+              const SizedBox(height: 30),
+              Center(
+              child: ElevatedButton(
                 onPressed: _submit,
-                child: Text('Guardar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1A5276),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15.0, horizontal: 80.0
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+                child: const Text('Guardar', 
+                style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
               ),
             ],
           ),

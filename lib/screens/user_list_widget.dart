@@ -32,10 +32,10 @@ class _PhotoListWidgetState extends State<PhotoListWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: const Color(0xFFBDC3C7).withOpacity(0.7),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -44,58 +44,66 @@ class _PhotoListWidgetState extends State<PhotoListWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Photos in SQLite:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
               ),
               IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: _fetchPhotos, // Llamar a la función para recargar fotos
+                icon: const Icon(Icons.refresh),
+                onPressed: _fetchPhotos,
+                color: Colors.black, // Llamar a la función para recargar fotos
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           photos.isEmpty
-              ? Text('No photos saved.') // Mensaje si no hay fotos
+              ? Center(child: Text('No photos saved.', style: TextStyle(color: Colors.grey[600]))) // Mensaje si no hay fotos
               : ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: photos.length,
                   itemBuilder: (context, index) {
                     final photo = photos[index]; // Obtener cada foto
-                    return ListTile(
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      elevation: 4,
+                      child: ListTile(
                       leading: photo['photo'] != null
-                          ? Image.memory(photo['photo'], width: 50, height: 50, fit: BoxFit.cover)
-                          : Icon(Icons.photo), // Mostrar la imagen o un icono por defecto
-                      title: Text('${photo['name']}'), // Mostrar el nombre
-                      subtitle: Text('${photo['description']}'), // Mostrar la descripción
+                      ?ClipOval(
+                           child: Image.memory(photo['photo'], width: 50, height: 50, fit: BoxFit.cover),)
+                          : const Icon(Icons.photo, color: Colors.grey), // Mostrar la imagen o un icono por defecto
+                      title: Text('${photo['name']}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ), // Mostrar el nombre
+                      subtitle: Text('${photo['description']}', style: TextStyle(color: Colors.grey[700],),
+                      ), // Mostrar la descripción
                       trailing: IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           // Mostrar confirmación antes de eliminar
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text('Eliminar foto'),
-                              content: Text('¿Estás seguro de que quieres eliminar esta foto?'),
+                              title: const Text('Eliminar foto'),
+                              content: const Text('¿Estás seguro de que quieres eliminar esta foto?'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(context).pop(),
-                                  child: Text('Cancelar'),
+                                  child: const Text('Cancelar'),
                                 ),
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                     _deletePhoto(photo['id']); // Llamar a la función para eliminar la foto
                                   },
-                                  child: Text('Eliminar'),
+                                  child: const Text('Eliminar'),
                                 ),
                               ],
                             ),
                           );
                         },
                       ),
-                    );
+                    ),
+                      );
                   },
                 ),
         ],

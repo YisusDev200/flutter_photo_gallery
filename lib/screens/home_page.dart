@@ -73,29 +73,69 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Synchronization'),
+        title: const Text('Synchronization', style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFF1A5276),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView( // Envolver el contenido en un SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Mostrar imagen seleccionada
               if (_selectedImage != null)
-                Image.memory(_selectedImage!, height: 100, width: 100),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Select Image'),
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                  ),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.memory(
+                        _selectedImage!,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: _pickImage,
+                  icon: const Icon(Icons.image, color: Colors.white,),
+                  label: const Text('Select Image', style: TextStyle(color: Colors.white),),
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor: Color(0xFF2C3E50)),
+                ),
               ),
+              const SizedBox(height: 20),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     PhotoListWidget(),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _nameController,
-                      decoration: InputDecoration(labelText: 'Name'),
+                      decoration: InputDecoration(labelText: 'Name', prefixIcon: const Icon(Icons.person),
+                      filled: true,
+                      fillColor: Color(0xFFBDC3C7).withOpacity(0.5),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                      ),
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a name';
@@ -103,9 +143,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         return null;
                       },
                     ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
+                      decoration: InputDecoration(labelText: 'Description', 
+                      prefixIcon:const Icon(Icons.description),
+                      filled: true,
+                      fillColor: Color(0xFFBDC3C7).withOpacity(0.5),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                      ),
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a description';
@@ -113,21 +161,30 @@ class _MyHomePageState extends State<MyHomePage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
                       onPressed: _savePhoto,
-                      child: Text('Save to SQLite'),
+                      icon: const Icon(Icons.save, color: Colors.white,),
+                      label:const Text("Save to SQLite",style: TextStyle(color: Colors.white),),
+                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
+                      backgroundColor: Colors.green),
                     ),
                   ],
                 ),
               ),
               // Botón de sincronización con MySQL
-              SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () async {
-                  await _syncService.syncWithMySQL(context);
-                },
-                child: Text('Sync with MySQL'),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await _syncService.syncWithMySQL(context);
+                  },
+                  child: const Text('Sync with MySQL', style: TextStyle(color:Colors.white)),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
+                backgroundColor: Colors.red),
+                ),
               ),
             ],
           ),

@@ -87,7 +87,18 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gallery Photos'),
+        title: Text('Gallery Photos', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(0xFF1A5276),
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.search), color: Colors.white,),
+          IconButton(onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomePage()),
+          );
+        }, icon: Icon(Icons.add, color: Colors.white),),
+        ],
       ),
       body: _isConnected
           ? _photos.isEmpty
@@ -95,11 +106,15 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Sin fotos'),
+                      Text('Sin fotos', style: TextStyle(fontSize: 18, color: Colors.red),
+                      ),
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: fetchPhotos,
-                        child: Text('Recargar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF1A5276),
+                        ),
+                        child: Text('Recargar', style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -117,16 +132,23 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                     itemCount: _photos.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
                                 child: Image.network(
                                   _photos[index]['photo'],
                                   width: double.infinity,
                                   fit: BoxFit.cover,
+                                ),
                                 ),
                               ),
                               SizedBox(height: 10),
@@ -148,7 +170,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.edit),
+                                    icon: Icon(Icons.edit, color: Colors.blue),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -161,7 +183,7 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete),
+                                    icon: Icon(Icons.delete, color: Colors.red),
                                     onPressed: () {
                                       deletePhoto(_photos[index]['id']);
                                     },
@@ -179,11 +201,16 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('No Internet connection'),
+                  Text('No Internet connection', 
+                  style: TextStyle(fontSize: 18, color: Colors.redAccent),
+                  ),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: fetchPhotos,
-                    child: Text('Recargar'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF1A5276),
+                    ),
+                    child: Text('Recargar', style: TextStyle(color: Colors.white),),
                   ),
                 ],
               ),
@@ -195,7 +222,8 @@ class _GalleryPhotosState extends State<GalleryPhotos> {
             MaterialPageRoute(builder: (context) => MyHomePage()),
           );
         },
-        child: Icon(Icons.add),
+        backgroundColor: Color(0xFF1A5276),
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
